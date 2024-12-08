@@ -12,7 +12,7 @@ export const DataEntry = () => {
   return (
     <div className="flex flex-col space-y-4">
       {/* TODO: turn into data entry line component */}
-      <div className="flex space-x-4">
+      <div className="flex flex-col sm:flex-row sm:space-x-4">
         <div>
           <Label htmlFor="test">Test</Label>
           <Input id="test" />

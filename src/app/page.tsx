@@ -8,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Home() {
@@ -15,7 +16,14 @@ export default function Home() {
 
   return (
     <div className="h-screen bg-black text-white">
-      <main className="flex h-[90%] items-center justify-center">
+      <header className="flex h-[10%] justify-center pt-8">
+        {session ? (
+          <Button>
+            Dashboard <ArrowRightIcon />
+          </Button>
+        ) : null}
+      </header>
+      <main className="flex h-[80%] items-center justify-center">
         {session ? (
           <DataEntry />
         ) : (
@@ -28,7 +36,7 @@ export default function Home() {
             <PopoverTrigger>
               <Avatar>
                 <AvatarImage
-                  src={session ? String(session?.user?.image) : undefined}
+                  src={session ? session?.user?.image?.toString() : undefined}
                   className="hover:cursor-pointer"
                 />
                 <AvatarFallback className="text-black">
