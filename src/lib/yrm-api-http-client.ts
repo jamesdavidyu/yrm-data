@@ -7,7 +7,7 @@ interface LoginPayload {
 
 export const getYrmApiHttpClient = (accessToken?: string) => {
     const instance: AxiosInstance = axios.create({
-        baseURL: "http://127.0.0.1:8000",
+        baseURL: process.env.YRM_DATA_API_URL,
         timeout: 18000,
         headers: {
             ...(accessToken ? { Authorization: `${accessToken}`} : {})

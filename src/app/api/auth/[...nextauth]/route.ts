@@ -1,9 +1,8 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
-import axios from "axios";
 import { getYrmApiHttpClient } from "@/lib/yrm-api-http-client";
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
     providers: [
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID!,
