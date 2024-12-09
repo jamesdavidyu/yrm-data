@@ -19,9 +19,10 @@ export const DataEntry = () => {
   const [index, setIndex] = useState<number>(1);
 
   return (
-    <div className="flex flex-col space-y-4">
-      {/* TODO: turn into data entry line component */}
-      <div className="flex space-x-2">
+    <div className="flex flex-col space-y-4 w-full sm:w-fit px-8 sm:px-0">
+      <div className="flex flex-col sm:flex-row space-x-2 space-y-2 sm:space-y-0">
+        {/* TODO: this is going to update all of them, need to figure out how to update each row */}
+        <div className="flex items-center justify-center">{index}</div>
         <div>
           <Popover>
             <PopoverTrigger asChild>
@@ -37,7 +38,7 @@ export const DataEntry = () => {
         </div>
         <div>
           <Select>
-            <SelectTrigger>
+            <SelectTrigger className="flex justify-center">
               <SelectValue placeholder="Name" />
             </SelectTrigger>
             <SelectContent className="w-fit">
@@ -48,7 +49,7 @@ export const DataEntry = () => {
         </div>
         <div>
           <Select>
-            <SelectTrigger>
+            <SelectTrigger className="flex justify-center">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -58,7 +59,7 @@ export const DataEntry = () => {
         </div>
         <div>
           <Select>
-            <SelectTrigger>
+            <SelectTrigger className="flex justify-center">
               <SelectValue placeholder="Notes" />
             </SelectTrigger>
             <SelectContent>
@@ -68,7 +69,7 @@ export const DataEntry = () => {
         </div>
         <div>
           <Select>
-            <SelectTrigger>
+            <SelectTrigger className="flex justify-center">
               <SelectValue placeholder="Hours" />
             </SelectTrigger>
             <SelectContent>
