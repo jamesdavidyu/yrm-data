@@ -5,12 +5,12 @@ interface LoginPayload {
     password: string | null | undefined;
 }
 
-export const getYrmApiHttpClient = (accessToken?: string) => {
+export const getYrmApiHttpClient = (idToken?: string) => {
     const instance: AxiosInstance = axios.create({
         baseURL: process.env.YRM_DATA_API_URL,
         timeout: 18000,
         headers: {
-            ...(accessToken ? { Authorization: `${accessToken}`} : {})
+            ...(idToken ? { Authorization: `Bearer ${idToken}`} : {})
         },
     });
     const client = new YrmApiHttpClient(instance);
@@ -30,4 +30,14 @@ class YrmApiHttpClient {
         
         return response;
     };
+
+    public async getHours() {
+        const response = await this.client
+            .get("/api/v1/hours/auth/")
+            .catch((e) => {
+                throw new Error(e);
+            });
+        
+        return response?.data;
+    }
 };

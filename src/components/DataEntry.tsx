@@ -12,6 +12,7 @@ import {
   PersonIcon,
   PlusIcon,
   QuestionMarkIcon,
+  UpdateIcon,
 } from "@radix-ui/react-icons";
 import { useState } from "react";
 import {
@@ -36,6 +37,10 @@ import {
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { RecursiveSuggestion } from "./RecursiveSuggestion";
+import { useHours } from "@/hooks/useHours";
+import axios from "axios";
+import { set } from "date-fns";
+import { RefreshCcw } from "lucide-react";
 
 // const schema = z.object({
 //   groups: z.array(
@@ -51,16 +56,25 @@ export interface DataEntryProps {
   setDarkMode: (darkMode: boolean) => void;
 }
 
+interface Hours {
+  id: string;
+  hour_value: number;
+  hour_label: string;
+  inputAt: Date;
+}
+
 export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
   const [index, setIndex] = useState<number>(1);
   const [date, setDate] = useState<Date>();
   const [name, setName] = useState<string>();
   // TODO: const categories = useCategory();
   const [categoryOpen, setCategoryOpen] = useState<boolean>();
-  const [categoryValue, setCategoryValue] = useState("");
+  const [hoursOpen, setHoursOpen] = useState<boolean>();
+  const [categoryValue, setCategoryValue] = useState<string>("");
+  const [hourValue, setHourValue] = useState<number>();
+  const { hours } = useHours();
 
   // TODO: change all dynamic screen sizes from sm: to lg:
-
   return (
     <div className="flex flex-col space-y-2 w-full lg:w-fit px-8 lg:px-0">
       <div className="flex justify-end items-center pl-2">
@@ -229,31 +243,48 @@ export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
         </div>
         <div>
           {/* TODO: convert into comboboxes */}
-          <Select>
-            <SelectTrigger className="flex justify-center">
-              <ClockIcon />
-              &nbsp;
-              <SelectValue placeholder="Hours" />
-              <CaretDownIcon />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0.25">0.25</SelectItem>
-              <SelectItem value="0.5">0.5</SelectItem>
-              <SelectItem value="0.75">0.75</SelectItem>
-              <SelectItem value="1">1</SelectItem>
-              <SelectItem value="1.25">1.25</SelectItem>
-              <SelectItem value="1.5">1.5</SelectItem>
-              <SelectItem value="1.75">1.75</SelectItem>
-              <SelectItem value="2">2</SelectItem>
-              <SelectItem value="2.25">2.25</SelectItem>
-              <SelectItem value="2.5">2.5</SelectItem>
-              <SelectItem value="2.75">2.75</SelectItem>
-              <SelectItem value="3">3</SelectItem>
-              <SelectItem value="3.25">3.25</SelectItem>
-              <SelectItem value="3.5">3.5</SelectItem>
-              <SelectItem value="3.75">3.75</SelectItem>
-            </SelectContent>
-          </Select>
+          <Popover open={hoursOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                className={darkMode ? darkModeButton : lightModeButton}
+                onClick={() => setHoursOpen(!hoursOpen)}
+              >
+                <ClockIcon />
+                {hourValue ? hourValue : "Hours"}
+                <CaretDownIcon />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <Command>
+                <CommandInput placeholder="Search hours..." />
+                <CommandList>
+                  <CommandEmpty>Not allowed.</CommandEmpty>
+                  <CommandGroup>
+                    {hours.hour
+                      ?.map((hour: Hours) => (
+                        <CommandItem
+                          key={hour.id}
+                          value={hour.hour_label}
+                          onSelect={(currentValue) => {
+                            setHourValue(
+                              Number(currentValue) === hourValue
+                                ? undefined
+                                : Number(currentValue)
+                            );
+                            setHoursOpen(!hoursOpen);
+                          }}
+                        >
+                          {hour.hour_value}
+                        </CommandItem>
+                      ))
+                      .sort(
+                        (a: Hours, b: Hours) => a.hour_value - b.hour_value
+                      )}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
         <div>
           <Button

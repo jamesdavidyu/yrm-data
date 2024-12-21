@@ -8,6 +8,7 @@ declare module "next-auth" {
             image?: string | null;
         };
         accessToken?: string | unknown;
+        idToken?: string | unknown;
     }
 
     interface JWT {
