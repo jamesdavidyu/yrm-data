@@ -38,7 +38,7 @@ export default function Home() {
           </Button>
         ) : null}
       </header>
-      <main className="flex h-[80%] items-center justify-center">
+      <main className="flex h-[80%] items-center justify-center overflow-auto">
         {session ? (
           <DataEntry darkMode={darkMode} setDarkMode={setDarkMode} />
         ) : (

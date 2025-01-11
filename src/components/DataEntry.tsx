@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import {
   CalendarIcon,
   CaretDownIcon,
+  CheckIcon,
   ClockIcon,
   HomeIcon,
   MinusIcon,
@@ -14,7 +15,7 @@ import {
   QuestionMarkIcon,
   UpdateIcon,
 } from "@radix-ui/react-icons";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -38,9 +39,6 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { RecursiveSuggestion } from "./RecursiveSuggestion";
 import { useHours } from "@/hooks/useHours";
-import axios from "axios";
-import { set } from "date-fns";
-import { RefreshCcw } from "lucide-react";
 
 // const schema = z.object({
 //   groups: z.array(
@@ -56,6 +54,14 @@ export interface DataEntryProps {
   setDarkMode: (darkMode: boolean) => void;
 }
 
+interface Records {
+  id: string;
+  name: string | null;
+  category: string | null;
+  note: string | null;
+  hours: number | null;
+}
+
 interface Hours {
   id: string;
   hour_value: number;
@@ -64,7 +70,15 @@ interface Hours {
 }
 
 export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
-  const [index, setIndex] = useState<number>(1);
+  const [rows, setRows] = useState<Records[]>([
+    {
+      id: crypto.randomUUID(),
+      name: null,
+      category: null,
+      note: null,
+      hours: null,
+    },
+  ]);
   const [date, setDate] = useState<Date>();
   const [name, setName] = useState<string>();
   // TODO: const categories = useCategory();
@@ -72,7 +86,21 @@ export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
   const [hoursOpen, setHoursOpen] = useState<boolean>();
   const [categoryValue, setCategoryValue] = useState<string>("");
   const [hourValue, setHourValue] = useState<number>();
+  // TODO: need to figure out how to make sure this always gets fetched without having to relogin?
   const { hours } = useHours();
+
+  const addRow = () => {
+    setRows((prevRows) => [
+      ...prevRows,
+      {
+        id: crypto.randomUUID(),
+        name: null,
+        category: null,
+        note: null,
+        hours: null,
+      },
+    ]);
+  };
 
   // TODO: change all dynamic screen sizes from sm: to lg:
   return (
@@ -142,73 +170,82 @@ export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="flex flex-col lg:flex-row space-x-2 space-y-2 lg:space-y-0">
-        {/* TODO: this is going to update all of them, need to figure out how to update each row */}
-        <div className="flex items-center justify-center">{index}</div>
-        <div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                className={
-                  darkMode
-                    ? "border bg-black w-full font-normal"
-                    : "border bg-white text-black w-full hover:cursor-pointer hover:bg-white font-normal"
-                }
-              >
-                <CalendarIcon />
-                {date
-                  ? daysOfWeek[date.getDay()] +
-                    " " +
-                    String(date.getMonth() + 1) +
-                    "/" +
-                    String(date.getDate() + "/" + String(date.getFullYear()))
-                  : "Date"}
+      {rows.map((row, index) => (
+        <div
+          key={row.id}
+          className="flex flex-col lg:grid lg:grid-cols-7 space-x-2 space-y-2 lg:space-y-0"
+        >
+          {/* TODO: this is going to update all of them, need to figure out how to update each row */}
+          <div className="flex items-center justify-end">{index}</div>
+          <div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  className={
+                    darkMode
+                      ? "border bg-black w-full font-normal"
+                      : "border bg-white text-black w-full hover:cursor-pointer hover:bg-white font-normal"
+                  }
+                >
+                  <CalendarIcon />
+                  {date
+                    ? daysOfWeek[date.getDay()] +
+                      " " +
+                      String(date.getMonth() + 1) +
+                      "/" +
+                      String(date.getDate() + "/" + String(date.getFullYear()))
+                    : "Date"}
+                  <CaretDownIcon />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="bg-black">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  className="text-white"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div>
+            <Select>
+              <SelectTrigger className="flex justify-center items-center">
+                <PersonIcon />
+                &nbsp;
+                <SelectValue placeholder="Name" />
                 <CaretDownIcon />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <Calendar mode="single" selected={date} onSelect={setDate} />
-            </PopoverContent>
-          </Popover>
-        </div>
-        <div>
-          <Select>
-            <SelectTrigger className="flex justify-center items-center">
-              <PersonIcon />
-              &nbsp;
-              <SelectValue placeholder="Name" />
-              <CaretDownIcon />
-            </SelectTrigger>
-            <SelectContent className="w-fit">
-              <SelectItem value="Lou Vinciguerra">Lou</SelectItem>
-              <SelectItem value="Hassan Adams">Hassan</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Popover open={categoryOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                className={darkMode ? darkModeButton : lightModeButton}
-                onClick={() => setCategoryOpen(!categoryOpen)}
-              >
-                <HomeIcon />
-                {/* {categoryValue
+              </SelectTrigger>
+              <SelectContent className="w-fit">
+                <SelectItem value="Lou Vinciguerra">Lou</SelectItem>
+                <SelectItem value="Hassan Adams">Hassan</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Popover open={categoryOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  className={darkMode ? darkModeButton : lightModeButton}
+                  onClick={() => setCategoryOpen(!categoryOpen)}
+                >
+                  <HomeIcon />
+                  {/* {categoryValue
                   ? categories.find(
                       (category) => category.value === categoryValue
                     )?.label
                   : "Category"} */}
-                Category
-                <CaretDownIcon />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <Command>
-                <CommandInput placeholder="Search categories..." />
-                <CommandList>
-                  <CommandEmpty>No category found.</CommandEmpty>
-                  <CommandGroup>
-                    {/* {categories.map((category) => (
+                  Category
+                  <CaretDownIcon />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <Command>
+                  <CommandInput placeholder="Search categories..." />
+                  <CommandList>
+                    <CommandEmpty>No category found.</CommandEmpty>
+                    <CommandGroup>
+                      {/* {categories.map((category) => (
                       <CommandItem
                         key={category.value}
                         value={category.value}
@@ -222,90 +259,96 @@ export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
                         {category.label}
                       </CommandItem>
                     ))} */}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div>
+            <Popover>
+              <PopoverTrigger className="flex justify-center" asChild>
+                <Button className={darkMode ? darkModeButton : lightModeButton}>
+                  <Pencil2Icon />
+                  Notes
+                  <CaretDownIcon />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="bg-black">
+                <div className="flex space-x-1">
+                  <Input className="text-white" />
+                  <Button>
+                    <CheckIcon />
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div>
+            {/* TODO: convert into comboboxes */}
+            <Popover open={hoursOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  className={darkMode ? darkModeButton : lightModeButton}
+                  onClick={() => setHoursOpen(!hoursOpen)}
+                >
+                  <ClockIcon />
+                  {/* TODO: this is not going to work for each instance... it's going to change all of them */}
+                  {hourValue ? hourValue : "Hours"}
+                  <CaretDownIcon />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <Command>
+                  <CommandInput placeholder="Search hours..." />
+                  <CommandList>
+                    <CommandEmpty>Not allowed.</CommandEmpty>
+                    <CommandGroup>
+                      {hours.hour
+                        ?.map((hour: Hours) => (
+                          <CommandItem
+                            key={hour.id}
+                            value={hour.hour_label}
+                            onSelect={(currentValue) => {
+                              setHourValue(
+                                Number(currentValue) === hourValue
+                                  ? undefined
+                                  : Number(currentValue)
+                              );
+                              setHoursOpen(!hoursOpen);
+                            }}
+                          >
+                            {hour.hour_value}
+                          </CommandItem>
+                        ))
+                        .sort(
+                          (a: Hours, b: Hours) => a.hour_value - b.hour_value
+                        )}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div>
+            <Button
+              title="Delete row"
+              className="w-full sm:w-fit p-2"
+              variant="destructive"
+              // onClick={() => {
+              //   setIndex(index - 1);
+              // }}
+            >
+              <MinusIcon />
+            </Button>
+          </div>
         </div>
-        <div>
-          <Select>
-            <SelectTrigger className="flex justify-center">
-              <Pencil2Icon />
-              &nbsp;
-              <SelectValue placeholder="Notes" />
-              <CaretDownIcon />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="test">Test</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          {/* TODO: convert into comboboxes */}
-          <Popover open={hoursOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                className={darkMode ? darkModeButton : lightModeButton}
-                onClick={() => setHoursOpen(!hoursOpen)}
-              >
-                <ClockIcon />
-                {hourValue ? hourValue : "Hours"}
-                <CaretDownIcon />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <Command>
-                <CommandInput placeholder="Search hours..." />
-                <CommandList>
-                  <CommandEmpty>Not allowed.</CommandEmpty>
-                  <CommandGroup>
-                    {hours.hour
-                      ?.map((hour: Hours) => (
-                        <CommandItem
-                          key={hour.id}
-                          value={hour.hour_label}
-                          onSelect={(currentValue) => {
-                            setHourValue(
-                              Number(currentValue) === hourValue
-                                ? undefined
-                                : Number(currentValue)
-                            );
-                            setHoursOpen(!hoursOpen);
-                          }}
-                        >
-                          {hour.hour_value}
-                        </CommandItem>
-                      ))
-                      .sort(
-                        (a: Hours, b: Hours) => a.hour_value - b.hour_value
-                      )}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
-        <div>
-          <Button
-            title="Delete row"
-            className="w-full sm:w-fit p-2"
-            variant="destructive"
-            onClick={() => {
-              setIndex(index - 1);
-            }}
-          >
-            <MinusIcon />
-          </Button>
-        </div>
-      </div>
+      ))}
       <div className="flex justify-end pl-2">
         <Button
           title="Add row"
           className="w-full sm:w-fit p-2 bg-blue-500 hover:bg-blue-400"
-          onClick={() => {
-            setIndex(index + 1);
-          }}
+          onClick={addRow}
         >
           <PlusIcon />
         </Button>

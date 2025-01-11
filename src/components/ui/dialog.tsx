@@ -47,9 +47,10 @@ const DialogContent = React.forwardRef<
       <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm ring-offset-background transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
         <X
           className="h-4 w-4 bg-red-500 hover:bg-red-400 text-white rounded-sm"
-          onClick={() => {
-            window.location.reload();
-          }}
+          // TODO: let's see what happens on form submit first
+          // onClick={() => {
+          //   window.location.reload();
+          // }}
         />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
