@@ -82,8 +82,8 @@ export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
   const [date, setDate] = useState<Date>();
   const [name, setName] = useState<string>();
   // TODO: const categories = useCategory();
-  const [categoryOpen, setCategoryOpen] = useState<boolean>();
-  const [hoursOpen, setHoursOpen] = useState<boolean>();
+  // const [categoryOpen, setCategoryOpen] = useState<boolean>();
+  // const [hoursOpen, setHoursOpen] = useState<boolean>();
   const [categoryValue, setCategoryValue] = useState<string>("");
   const [hourValue, setHourValue] = useState<number>();
   // TODO: need to figure out how to make sure this always gets fetched without having to relogin?
@@ -102,73 +102,87 @@ export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
     ]);
   };
 
+  const deleteRow = (id: string) => {
+    setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+  };
+
   // TODO: change all dynamic screen sizes from sm: to lg:
   return (
     <div className="flex flex-col space-y-2 w-full lg:w-fit px-8 lg:px-0">
-      <div className="flex justify-end items-center pl-2">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              variant="link"
-              className={
-                darkMode ? "text-white hidden sm:block" : "hidden sm:block"
-              }
-            >
-              Need more fields?
-            </Button>
-          </DialogTrigger>
-          <DialogContent className={darkMode ? "bg-black text-white" : ""}>
-            <DialogTitle>Need more fields?</DialogTitle>
-            <p>
-              Suggest some fields you would like added to your selections below.
-            </p>
-            <div className="flex flex-col md:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    className={darkMode ? darkModeButton : lightModeButton}
-                  >
-                    Date
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <Calendar />
-                </PopoverContent>
-              </Popover>
-              <Input placeholder="Name" />
-              <Input placeholder="Category" />
-              <Input placeholder="Note" />
-              <Select>
-                <SelectTrigger>Hours</SelectTrigger>
-                <SelectContent>Test</SelectContent>
-              </Select>
-            </div>
-            <div className="flex space-x-2">
-              <Button className="w-full bg-blue-600 hover:bg-blue-500">
-                <PaperPlaneIcon />
-                Submit
+      <div className="grid grid-cols-7 space-x-2">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="link"
+                className={
+                  darkMode ? "text-white hidden sm:block" : "hidden sm:block"
+                }
+              >
+                Need more fields?
               </Button>
-              <RecursiveSuggestion
-                darkMode={darkMode}
-                setDarkMode={setDarkMode}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              className="w-full sm:w-fit p-2 text-black bg-yellow-300 hover:bg-yellow-200"
-              title="Need more fields?"
-            >
-              <p className="block sm:hidden">Need more fields?</p>
-              <QuestionMarkIcon className="hidden sm:block" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className={darkMode ? "bg-black text-white" : ""}>
-            <DialogTitle>Need more fields?</DialogTitle>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent className={darkMode ? "bg-black text-white" : ""}>
+              <DialogTitle>Need more fields?</DialogTitle>
+              <p>
+                Suggest some fields you would like added to your selections
+                below.
+              </p>
+              <div className="flex flex-col md:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      className={darkMode ? darkModeButton : lightModeButton}
+                    >
+                      Date
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <Calendar />
+                  </PopoverContent>
+                </Popover>
+                <Input placeholder="Name" />
+                <Input placeholder="Category" />
+                <Input placeholder="Note" />
+                <Select>
+                  <SelectTrigger>Hours</SelectTrigger>
+                  <SelectContent>Test</SelectContent>
+                </Select>
+              </div>
+              <div className="flex space-x-2">
+                <Button className="w-full bg-blue-600 hover:bg-blue-500">
+                  <PaperPlaneIcon />
+                  Submit
+                </Button>
+                <RecursiveSuggestion
+                  darkMode={darkMode}
+                  setDarkMode={setDarkMode}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+        <div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                className="w-full sm:w-fit p-2 text-black bg-yellow-300 hover:bg-yellow-200"
+                title="Need more fields?"
+              >
+                <p className="block sm:hidden">Need more fields?</p>
+                <QuestionMarkIcon className="hidden sm:block" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className={darkMode ? "bg-black text-white" : ""}>
+              <DialogTitle>Need more fields?</DialogTitle>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       {rows.map((row, index) => (
         <div
@@ -223,11 +237,13 @@ export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
             </Select>
           </div>
           <div>
-            <Popover open={categoryOpen}>
+            <Popover
+            // open={categoryOpen}
+            >
               <PopoverTrigger asChild>
                 <Button
                   className={darkMode ? darkModeButton : lightModeButton}
-                  onClick={() => setCategoryOpen(!categoryOpen)}
+                  // onClick={() => setCategoryOpen(!categoryOpen)}
                 >
                   <HomeIcon />
                   {/* {categoryValue
@@ -286,11 +302,13 @@ export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
           </div>
           <div>
             {/* TODO: convert into comboboxes */}
-            <Popover open={hoursOpen}>
+            <Popover
+            // open={hoursOpen}
+            >
               <PopoverTrigger asChild>
                 <Button
                   className={darkMode ? darkModeButton : lightModeButton}
-                  onClick={() => setHoursOpen(!hoursOpen)}
+                  // onClick={() => setHoursOpen(!hoursOpen)}
                 >
                   <ClockIcon />
                   {/* TODO: this is not going to work for each instance... it's going to change all of them */}
@@ -315,7 +333,7 @@ export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
                                   ? undefined
                                   : Number(currentValue)
                               );
-                              setHoursOpen(!hoursOpen);
+                              // setHoursOpen(!hoursOpen);
                             }}
                           >
                             {hour.hour_value}
@@ -335,28 +353,40 @@ export const DataEntry = ({ darkMode, setDarkMode }: DataEntryProps) => {
               title="Delete row"
               className="w-full sm:w-fit p-2"
               variant="destructive"
-              // onClick={() => {
-              //   setIndex(index - 1);
-              // }}
+              onClick={() => deleteRow(row.id)}
             >
               <MinusIcon />
             </Button>
           </div>
         </div>
       ))}
-      <div className="flex justify-end pl-2">
-        <Button
-          title="Add row"
-          className="w-full sm:w-fit p-2 bg-blue-500 hover:bg-blue-400"
-          onClick={addRow}
-        >
-          <PlusIcon />
-        </Button>
+      <div className="grid grid-cols-7 space-x-2">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div>
+          <Button
+            title="Add row"
+            className="w-full sm:w-fit p-2 bg-blue-500 hover:bg-blue-400"
+            onClick={addRow}
+          >
+            <PlusIcon />
+          </Button>
+        </div>
       </div>
-      <Button className="ml-2">
-        <PaperPlaneIcon />
-        Submit
-      </Button>
+      <div className="grid grid-cols-7 space-x-2">
+        <div></div>
+        <div className="col-span-5">
+          <Button className="w-full">
+            <PaperPlaneIcon />
+            Submit
+          </Button>
+        </div>
+        <div></div>
+      </div>
     </div>
   );
 };
