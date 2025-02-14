@@ -46,7 +46,7 @@ export default function Home() {
         )}
       </main>
       <footer className="flex h-[10%] justify-between px-8">
-        <a href="https://planorban.com">
+        <a href="https://planorban.com" className="flex items-center">
           <Avatar>
             <AvatarImage src="https://m2my1rq4tt.ufs.sh/f/AR95GDbqfmiLSgxEf8i4ZGeSIWMpQRy6gK7A5vNl0HaJDrVx" />
           </Avatar>
